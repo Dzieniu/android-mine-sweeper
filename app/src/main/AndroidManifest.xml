@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dzieniu.minesweeper">
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activity.MainMenu">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activity.DifficultyChoice"></activity>
+        <activity android:name=".activity.CustomGame"></activity>
+        <activity android:name=".activity.GameBoard"></activity>
+        <activity android:name=".activity.GameEndPopup"></activity>
+        <activity android:name=".activity.HighscorePopup"></activity>
+        <activity android:name=".activity.LeaderBoard"></activity>
+    </application>
+</manifest>
