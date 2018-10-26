@@ -16,7 +16,7 @@ public class DifficultyChoice extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_difficulty);
+        setContentView(R.layout.activity_difficulty_choice);
         DifficultyChoice.this.setTitle("Choose difficulty");
 
         tvDifficultyBeginner = (TextView) findViewById(R.id.tvDifficultyBeginner);

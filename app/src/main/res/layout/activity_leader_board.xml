@@ -68,7 +68,7 @@
         android:background="@android:color/background_light">
 
         <LinearLayout
-            android:id="@+id/linearLayoutHighscores"
+            android:id="@+id/highScoreList"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"></LinearLayout>

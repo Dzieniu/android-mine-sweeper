@@ -8,18 +8,20 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainMenu">
+        <activity android:name=".activity.Login">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.DifficultyChoice"></activity>
-        <activity android:name=".activity.CustomGame"></activity>
-        <activity android:name=".activity.GameBoard"></activity>
-        <activity android:name=".activity.GameEndPopup"></activity>
-        <activity android:name=".activity.HighscorePopup"></activity>
-        <activity android:name=".activity.LeaderBoard"></activity>
+        <activity android:name=".activity.MainMenu"></activity>
+        <activity android:name=".activity.DifficultyChoice" />
+        <activity android:name=".activity.CustomGame" />
+        <activity android:name=".activity.GameBoard" />
+        <activity android:name=".activity.GameEndPopup" />
+        <activity android:name=".activity.HighscorePopup" />
+        <activity android:name=".activity.LeaderBoard" />
     </application>
+
 </manifest>

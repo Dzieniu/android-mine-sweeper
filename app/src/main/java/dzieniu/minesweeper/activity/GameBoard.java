@@ -14,6 +14,11 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import dzieniu.minesweeper.Field;
 import dzieniu.minesweeper.GameSaver;
 import dzieniu.minesweeper.R;
@@ -34,6 +39,8 @@ public class GameBoard extends AppCompatActivity{
     long startTime = 0;
     public static String signature;
 
+    private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+
     Handler timerHandler = new Handler();
     Runnable timerRunnable = new Runnable() {
 
@@ -45,10 +52,13 @@ public class GameBoard extends AppCompatActivity{
             seconds = seconds % 60;
 
             tvTime.setText(String.format("%d:%02d", minutes, seconds));
+            gameTime = seconds;
 
             timerHandler.postDelayed(this, 500);
         }
     };
+
+    private long gameTime = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -454,6 +464,7 @@ public class GameBoard extends AppCompatActivity{
             deleteFile("minesweeperSavedGameState.txt");
             over = 1;
 
+            uploadHighScore();
             Intent intent = new Intent(GameBoard.this,HighscorePopup.class);
             GameBoard.this.startActivityForResult(intent, 2);
         }
@@ -487,30 +498,6 @@ public class GameBoard extends AppCompatActivity{
                 GameBoard.this.startActivity(intent);
             }else if(resultCode == 4){
 
-                String date = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
-                String time = tvTime.getText().toString();
-                String difficulty = "";
-                int notCustom = 0;
-
-                if(height==9 && width==9 && mines==10) {
-                    difficulty = "beginner";
-                    notCustom = 1;
-                }else if(height==12 && width==12 && mines==24) {
-                    difficulty = "easy";
-                    notCustom = 1;
-                }else if(height==16 && width==16 && mines==40) {
-                    difficulty = "intermediate";
-                    notCustom = 1;
-                }else if(height==30 && width==16 && mines==99) {
-                    difficulty = "expert";
-                    notCustom = 1;
-                }
-
-                if(notCustom==1) {
-                    // PUSH THE HIGHSCORE TO THE DATABASE
-//                    uploadHighscore(difficulty, signature, date, time);
-                }
-
                 Intent intent = new Intent(getApplicationContext(), GameEndPopup.class);
                 intent.putExtra("wynik", "You Win!!!");
                 startActivityForResult(intent, 2);
@@ -523,40 +510,25 @@ public class GameBoard extends AppCompatActivity{
         }
     }
 
-//    public void uploadHighscore(String difficulty,String name,String date,String time){
-//
-//        String url ="";
-//        if(difficulty.matches("beginner")){
-//            url = "http://dd96.000webhostapp.com/uploadHighscoreBeginner.php";
-//        }else if(difficulty.matches("easy")){
-//            url = "http://dd96.000webhostapp.com/uploadHighscoreEasy.php";
-//        }else if(difficulty.matches("intermediate")){
-//            url = "http://dd96.000webhostapp.com/uploadHighscoreIntermediate.php";
-//        }else if(difficulty.matches("expert")){
-//            url = "http://dd96.000webhostapp.com/uploadHighscoreExpert.php";
-//        }
-//
-//        queue = Volley.newRequestQueue(GameBoard.this);
-//        Response.Listener<String> responseListener = new Response.Listener<String>() {
-//            @Override
-//            public void onResponse(String response) {
-//                try {
-//                    JSONObject jsonResponse = new JSONObject(response);
-//                    boolean success = jsonResponse.getBoolean("success");
-//
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//
-//
-//
-//        UploadHighscore upload = new UploadHighscore(url,name,date,time, responseListener);
-//        upload.setRetryPolicy(new DefaultRetryPolicy(
-//                1000,
-//                50,
-//                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-//        queue.add(upload);
-//    }
+    public void uploadHighScore(){
+
+        String difficulty = "";
+        boolean notCustom = false;
+
+        if(height==9 && width==9 && mines==10) {
+            difficulty = "beginner";
+        }else if(height==12 && width==12 && mines==24) {
+            difficulty = "easy";
+        }else if(height==16 && width==16 && mines==40) {
+            difficulty = "intermediate";
+        }else if(height==30 && width==16 && mines==99) {
+            difficulty = "expert";
+        } else notCustom = false;
+
+
+        if (notCustom) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            databaseReference.child("highscores/" + difficulty + "/" + user.getDisplayName()).setValue(gameTime);
+        }
+    }
 }
