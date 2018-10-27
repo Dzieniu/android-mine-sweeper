@@ -2,6 +2,7 @@ package dzieniu.minesweeper;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -66,10 +67,10 @@ public class GameSaver {
         writeToFile(save,filename,context);
     }
 
-    public static void saveGameState(int height, int width, int mines, Field[][] minefield, Context context){
+    public static void saveGameState(int height, int width, int mines, long time, int defuses, Field[][] minefield, Context context){
 
         String filename = "minesweeperSavedGameState.txt";
-        String save = height+"/"+width+"/"+mines+"/";
+        String save = height + "/" + width + "/" + mines + "/" + time + "/" + defuses + "/";
         for(int i=1;i<height+1;i++){
             for(int j=1;j<width+1;j++) {
                 if(!minefield[i][j].getContent().matches("x") && minefield[i][j].getClicked()==0){
@@ -95,9 +96,12 @@ public class GameSaver {
         String sHeight = "";
         String sWidth = "";
         String sMines = "";
+        String sTime = "";
+        String sDefuses = "";
 
+        Log.d("none", save);
 
-        for (; ; ) {
+        for (;;) {
             if (!(save.charAt(counter)+"").matches("/")) {
                 sHeight = sHeight + save.charAt(counter);
                 counter++;
@@ -124,13 +128,35 @@ public class GameSaver {
                 break;
             }
         }
+        for(;;) {
+            if (!(save.charAt(counter)+"").matches("/")) {
+                sTime = sTime + save.charAt(counter);
+                counter++;
+            } else {
+                counter++;
+                break;
+            }
+        }
+        for(;;) {
+            if (!(save.charAt(counter)+"").matches("/")) {
+                sDefuses = sDefuses + save.charAt(counter);
+                counter++;
+            } else {
+                counter++;
+                break;
+            }
+        }
 
 
         Map<String, Integer> savedData = new HashMap<>();
         savedData.put("height", Integer.parseInt(sHeight));
         savedData.put("width", Integer.parseInt(sWidth));
         savedData.put("mines", Integer.parseInt(sWidth));
+        savedData.put("time", Integer.parseInt(sTime));
+        savedData.put("defuses", Integer.parseInt(sDefuses));
         savedData.put("counter", counter);
+
+        Log.d("none", savedData.get("time").toString());
 
         return savedData;
     }

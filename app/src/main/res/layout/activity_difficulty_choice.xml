@@ -28,56 +28,52 @@
             android:id="@+id/tvDifficultyBeginner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="10dp"
             android:gravity="center_vertical|center"
             android:text="Beginner"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
 
         <Button
             android:id="@+id/tvDifficultyEasy"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Easy"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
 
         <Button
             android:id="@+id/tvDifficultyIntermediate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Intermediate"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
 
         <Button
             android:id="@+id/tvDifficultyExpert"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
             android:text="Expert"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
 
         <Button
@@ -86,11 +82,10 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
             android:gravity="center"
             android:text="Custom difficulty ..."
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light"
+            android:textColor="@color/colorPrimary"
             android:textSize="14sp" />
     </LinearLayout>
 

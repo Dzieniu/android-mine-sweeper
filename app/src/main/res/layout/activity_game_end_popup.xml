@@ -15,10 +15,10 @@
             android:id="@+id/tvGameResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
             android:layout_marginTop="40dp"
+            android:layout_marginBottom="40dp"
             android:gravity="center"
-            android:text="TextView"
+            android:text="Game over"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
 
@@ -26,37 +26,34 @@
             android:id="@+id/buttonPlayAgain"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="25dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="25dp"
             android:text="Play again"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@color/colorPrimary" />
 
         <Button
             android:id="@+id/buttonRestart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="25dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="25dp"
             android:text="Restart this game"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@color/colorPrimary" />
 
         <Button
             android:id="@+id/buttonHighscores"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="25dp"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
+            android:layout_marginBottom="25dp"
             android:text="Highscores"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@color/colorPrimary" />
 
         <Button
             android:id="@+id/buttonEndGame"
@@ -64,10 +61,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
             android:text="End game"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@color/colorPrimary" />
     </LinearLayout>
 
 </ScrollView>

@@ -1,10 +1,12 @@
 package dzieniu.minesweeper.activity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -123,5 +125,18 @@ public class LeaderBoard extends AppCompatActivity {
 
     private void loadHighscores(){
         databaseReference.child("highscores").child(difficulty).orderByValue().addListenerForSingleValueEvent(databaseListener);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+        {
+            Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+            startActivity(intent);
+            finish();
+
+        }
+        return true;
     }
 }

@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
             android:gravity="center"
-            android:text="Define your game"
+            android:text="Create your game"
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
 
@@ -91,14 +91,14 @@
 
         <Button
             android:id="@+id/buttonCreateGame"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
             android:layout_marginLeft="40dp"
             android:layout_marginRight="40dp"
-            android:background="@color/colorPrimary"
-            android:text="Go!"
+            android:text="Create"
             android:textAllCaps="false"
-            android:textColor="@android:color/background_light" />
+            android:textColor="@color/colorPrimary" />
 
     </LinearLayout>
 </ScrollView>

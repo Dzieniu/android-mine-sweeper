@@ -17,7 +17,7 @@
         <activity android:name=".activity.MainMenu" android:theme="@style/noBarTheme"></activity>
         <activity android:name=".activity.DifficultyChoice" android:theme="@style/noBarTheme"/>
         <activity android:name=".activity.CustomGame" android:theme="@style/noBarTheme"/>
-        <activity android:name=".activity.GameBoard" android:theme="@style/noBarTheme"/>
+        <activity android:name=".activity.GameBoard" android:theme="@style/noBarTheme" android:parentActivityName=".activity.MainMenu"/>
         <activity android:name=".activity.GameEndPopup" android:theme="@style/AppTheme"/>
         <activity android:name=".activity.HighScorePopup" android:theme="@style/AppTheme"/>
         <activity android:name=".activity.LeaderBoard" android:theme="@style/noBarTheme"/>
