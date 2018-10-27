@@ -1,8 +1,8 @@
 package dzieniu.minesweeper.activity;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -14,7 +14,6 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 import dzieniu.minesweeper.R;
@@ -22,13 +21,18 @@ import dzieniu.minesweeper.R;
 public class Login extends AppCompatActivity {
 
     private SignInButton signInButton;
-    private FirebaseAuth auth;
+    private FirebaseAuth auth = FirebaseAuth.getInstance();
     private GoogleSignInClient mGoogleSignInClient;
 
     private static int RC_SIGN_IN = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        if (auth.getCurrentUser()!=null) {
+            openMainMenu();
+        }
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -36,8 +40,6 @@ public class Login extends AppCompatActivity {
         signInButton.setOnClickListener((event) -> {
             signIn();
         });
-
-        auth = FirebaseAuth.getInstance();
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -78,17 +80,17 @@ public class Login extends AppCompatActivity {
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(this, task -> {
                     if (task.isSuccessful()) {
-
-                        Intent intent = new Intent(getApplicationContext(), MainMenu.class);
-                        startActivity(intent);
-
-                        Toast.makeText(getApplicationContext(), "User logged in successfuly",Toast.LENGTH_SHORT);
-
+                        openMainMenu();
                     } else {
-                        Toast.makeText(getApplicationContext(), "User authentication failed",Toast.LENGTH_SHORT);
+                        // ...
                     }
-
                     // ...
                 });
+    }
+
+    private void openMainMenu() {
+        Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+        startActivity(intent);
+        finish();
     }
 }
