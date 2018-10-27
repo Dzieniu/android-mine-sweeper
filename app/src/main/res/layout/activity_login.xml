@@ -15,6 +15,7 @@
         android:text="MineSweeper"
         android:textAlignment="center"
         android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
         android:textSize="32sp"
         android:textStyle="bold" />
 
