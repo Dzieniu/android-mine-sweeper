@@ -20,7 +20,7 @@
         <activity android:name=".activity.CustomGame" />
         <activity android:name=".activity.GameBoard" />
         <activity android:name=".activity.GameEndPopup" />
-        <activity android:name=".activity.HighscorePopup" />
+        <activity android:name=".activity.HighScorePopup" />
         <activity android:name=".activity.LeaderBoard" />
     </application>
 

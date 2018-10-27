@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,18 +14,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import dzieniu.minesweeper.Field;
 import dzieniu.minesweeper.GameSaver;
 import dzieniu.minesweeper.R;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 import java.util.Random;
 
@@ -36,8 +39,9 @@ public class GameBoard extends AppCompatActivity{
     private  Button buttonReset,buttonSwitchMode,buttonDefuse;
     public static Field minefield[][];
     public static int mode,allFields,emptyFields,fieldsCounter,flagCounter,defuses;
-    long startTime = 0;
-    public static String signature;
+    private long startTime = 0;
+    private long gameTime = 0;
+    private String difficulty = "";
 
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
@@ -52,13 +56,11 @@ public class GameBoard extends AppCompatActivity{
             seconds = seconds % 60;
 
             tvTime.setText(String.format("%d:%02d", minutes, seconds));
-            gameTime = seconds;
+            gameTime = (minutes*60) + seconds;
 
             timerHandler.postDelayed(this, 500);
         }
     };
-
-    private long gameTime = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
@@ -464,9 +466,11 @@ public class GameBoard extends AppCompatActivity{
             deleteFile("minesweeperSavedGameState.txt");
             over = 1;
 
+            Intent intent = new Intent(getApplicationContext(), GameEndPopup.class);
+            intent.putExtra("wynik", "You Win!!!");
+            startActivityForResult(intent, 2);
+
             uploadHighScore();
-            Intent intent = new Intent(GameBoard.this,HighscorePopup.class);
-            GameBoard.this.startActivityForResult(intent, 2);
         }
     }
 
@@ -498,9 +502,6 @@ public class GameBoard extends AppCompatActivity{
                 GameBoard.this.startActivity(intent);
             }else if(resultCode == 4){
 
-                Intent intent = new Intent(getApplicationContext(), GameEndPopup.class);
-                intent.putExtra("wynik", "You Win!!!");
-                startActivityForResult(intent, 2);
             }else if(resultCode == 5){
 
                 Intent intent = new Intent(GameBoard.this, LeaderBoard.class);
@@ -512,8 +513,7 @@ public class GameBoard extends AppCompatActivity{
 
     public void uploadHighScore(){
 
-        String difficulty = "";
-        boolean notCustom = false;
+        boolean notCustom = true;
 
         if(height==9 && width==9 && mines==10) {
             difficulty = "beginner";
@@ -528,7 +528,27 @@ public class GameBoard extends AppCompatActivity{
 
         if (notCustom) {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            databaseReference.child("highscores/" + difficulty + "/" + user.getDisplayName()).setValue(gameTime);
+
+            databaseReference.child("highscores").child(difficulty).child(user.getDisplayName()).addListenerForSingleValueEvent(new ValueEventListener() {
+
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                    Long time = Long.parseLong(dataSnapshot.getValue().toString());
+                    if (time>gameTime) {
+                        databaseReference.child("highscores/" + difficulty + "/" + user.getDisplayName()).setValue(gameTime);
+                        databaseReference.orderByValue();
+
+                        Intent intent = new Intent(GameBoard.this,HighScorePopup.class);
+                        GameBoard.this.startActivityForResult(intent, 2);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 }

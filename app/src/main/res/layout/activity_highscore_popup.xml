@@ -21,17 +21,6 @@
             android:textColor="@color/colorPrimary"
             android:textSize="24sp" />
 
-        <EditText
-            android:id="@+id/etSignYourself"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="40dp"
-            android:layout_marginRight="40dp"
-            android:ems="10"
-            android:gravity="center"
-            android:hint="your name"
-            android:inputType="textPersonName" />
-
         <Button
             android:id="@+id/buttonOk"
             android:layout_width="match_parent"

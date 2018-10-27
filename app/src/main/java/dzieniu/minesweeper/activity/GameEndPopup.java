@@ -3,7 +3,6 @@ package dzieniu.minesweeper.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
-import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -19,44 +18,32 @@ public class GameEndPopup extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_end_popup);
 
-        buttonPlayAgain = (Button) findViewById(R.id.buttonPlayAgain);
-        buttonRestart = (Button) findViewById(R.id.buttonRestart);
-        buttonHighscores = (Button) findViewById(R.id.buttonHighscores);
-        buttonEndGame = (Button) findViewById(R.id.buttonEndGame);
+        buttonPlayAgain = findViewById(R.id.buttonPlayAgain);
+        buttonRestart = findViewById(R.id.buttonRestart);
+        buttonHighscores = findViewById(R.id.buttonHighscores);
+        buttonEndGame = findViewById(R.id.buttonEndGame);
 
-        tvGameResult = (TextView) findViewById(R.id.tvGameResult);
+        tvGameResult = findViewById(R.id.tvGameResult);
         tvGameResult.setText(getIntent().getStringExtra("wynik"));
 
-        buttonPlayAgain.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(2, null);
-                finish();
-            }
+        buttonPlayAgain.setOnClickListener(v -> {
+            setResult(2, null);
+            finish();
         });
 
-        buttonRestart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(3, null);
-                finish();
-            }
+        buttonRestart.setOnClickListener(v -> {
+            setResult(3, null);
+            finish();
         });
 
-        buttonHighscores.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(5, null);
-                finish();
-            }
+        buttonHighscores.setOnClickListener(v -> {
+            setResult(5, null);
+            finish();
         });
 
-        buttonEndGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setResult(1, null);
-                finish();
-            }
+        buttonEndGame.setOnClickListener(v -> {
+            setResult(1, null);
+            finish();
         });
 
         makeThisPopUp();

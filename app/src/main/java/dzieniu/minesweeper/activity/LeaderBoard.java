@@ -105,11 +105,6 @@ public class LeaderBoard extends AppCompatActivity {
         });
 
         loadHighscores();
-
-//        databaseReference.child("highscores/beginner/Dawid Dzien").setValue("123");
-//        databaseReference.child("highscores/beginner/Inny ziomek").setValue("156");
-//        databaseReference.child("highscores/beginner/Inna laska").setValue("178");
-//        databaseReference.child("highscores/intermediate/Dawid Dzien").setValue("111");
     }
 
     private void addUserScore(String highscore) {
@@ -127,6 +122,6 @@ public class LeaderBoard extends AppCompatActivity {
     }
 
     private void loadHighscores(){
-        databaseReference.child("highscores").child(difficulty).addListenerForSingleValueEvent(databaseListener);
+        databaseReference.child("highscores").child(difficulty).orderByValue().addListenerForSingleValueEvent(databaseListener);
     }
 }
