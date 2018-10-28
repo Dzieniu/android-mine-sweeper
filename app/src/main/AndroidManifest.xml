@@ -8,19 +8,37 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.Login" android:theme="@style/noBarTheme">
+        <activity
+            android:name=".activity.Login"
+            android:theme="@style/noBarTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainMenu" android:theme="@style/noBarTheme"></activity>
-        <activity android:name=".activity.DifficultyChoice" android:theme="@style/noBarTheme"/>
-        <activity android:name=".activity.CustomGame" android:theme="@style/noBarTheme"/>
-        <activity android:name=".activity.GameBoard" android:theme="@style/noBarTheme" android:parentActivityName=".activity.MainMenu"/>
-        <activity android:name=".activity.GameEndPopup" android:theme="@style/AppTheme"/>
-        <activity android:name=".activity.HighScorePopup" android:theme="@style/AppTheme"/>
-        <activity android:name=".activity.LeaderBoard" android:theme="@style/noBarTheme"/>
+        <activity
+            android:name=".activity.MainMenu"
+            android:theme="@style/noBarTheme" />
+        <activity
+            android:name=".activity.DifficultyChoice"
+            android:theme="@style/noBarTheme" />
+        <activity
+            android:name=".activity.CustomGame"
+            android:theme="@style/noBarTheme" />
+        <activity
+            android:name=".activity.GameBoard"
+            android:parentActivityName=".activity.MainMenu"
+            android:theme="@style/noBarTheme" />
+        <activity
+            android:name=".activity.GameEndPopup"
+            android:theme="@style/noBarTheme" />
+        <activity
+            android:name=".activity.HighScorePopup"
+            android:theme="@style/noBarTheme" />
+        <activity
+            android:name=".activity.leaderboard.LeaderBoard"
+            android:theme="@style/noBarTheme"></activity>
     </application>
 
 </manifest>
