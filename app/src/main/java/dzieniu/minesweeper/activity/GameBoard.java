@@ -330,7 +330,11 @@ public class GameBoard extends AppCompatActivity{
     public void onPause() {
         super.onPause();
         timer.cancel();
-        GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
+        if (over == 1) {
+            deleteFile("minesweeperSavedGameState.txt");
+        } else {
+            GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
+        }
     }
 
     @Override
@@ -340,8 +344,10 @@ public class GameBoard extends AppCompatActivity{
         timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                tvTime.setText(gameTime + " s");
-                gameTime++;
+                if (over == 0) {
+                    tvTime.setText(gameTime + " s");
+                    gameTime++;
+                }
             }
         }, 1000, 1000);
     }
@@ -433,7 +439,6 @@ public class GameBoard extends AppCompatActivity{
             }
         }
         deleteFile("minesweeperSavedGameState.txt");
-        if (getParent()!=null) getParent().recreate();
         over = 1;
         Intent intent = new Intent(GameBoard.this,GameEndPopup.class);
         intent.putExtra("wynik","You lose ...");
@@ -474,11 +479,11 @@ public class GameBoard extends AppCompatActivity{
 
         if (requestCode == 2) {
             if(resultCode == 1) {
+                deleteFile("minesweeperSavedGameState.txt");
                 Intent intent = new Intent(getApplicationContext(), MainMenu.class);
                 startActivity(intent);
                 finish();
             }else if(resultCode == 2){
-
                 Intent intent = getIntent();
                 intent.putExtra("isSave",0);
                 intent.putExtra("width",width);
@@ -549,7 +554,11 @@ public class GameBoard extends AppCompatActivity{
     {
         if(keyCode==KeyEvent.KEYCODE_BACK)
         {
-            GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
+            if (over == 1) {
+                deleteFile("minesweeperSavedGameState.txt");
+            } else {
+                GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
+            }
             Intent intent = new Intent(getApplicationContext(), MainMenu.class);
             startActivity(intent);
             finish();

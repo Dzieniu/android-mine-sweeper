@@ -3,6 +3,7 @@ package dzieniu.minesweeper.activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ public class GameEndPopup extends AppCompatActivity {
             finish();
         });
 
+        buttonRestart.setVisibility(View.GONE);
         buttonRestart.setOnClickListener(v -> {
             setResult(3, null);
             finish();

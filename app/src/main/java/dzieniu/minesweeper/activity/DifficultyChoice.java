@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.DisplayMetrics;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 
@@ -61,5 +62,18 @@ public class DifficultyChoice extends AppCompatActivity {
         intent.putExtra("mines",mines);
         intent.putExtra("time",time);
         startActivity(intent);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+        {
+            Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+            startActivity(intent);
+            finish();
+
+        }
+        return true;
     }
 }

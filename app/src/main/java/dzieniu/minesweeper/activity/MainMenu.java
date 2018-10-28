@@ -46,17 +46,20 @@ public class MainMenu extends AppCompatActivity {
             Intent intent = new Intent(MainMenu.this, GameBoard.class);
             intent.putExtra("isSave",2);
             intent.putExtra("save",GameSaver.readFromFile(SAVE_FILE,getApplicationContext()));
-            MainMenu.this.startActivity(intent);
+            startActivity(intent);
+            finish();
         });
 
         buttonNewGame.setOnClickListener((event) -> {
             Intent intent = new Intent(MainMenu.this, DifficultyChoice.class);
             MainMenu.this.startActivity(intent);
+            finish();
         });
 
         buttonLeaderBoard.setOnClickListener((event) -> {
             Intent intent = new Intent(MainMenu.this, LeaderBoard.class);
             MainMenu.this.startActivity(intent);
+            finish();
         });
 
         buttonExit.setOnClickListener(v ->{
