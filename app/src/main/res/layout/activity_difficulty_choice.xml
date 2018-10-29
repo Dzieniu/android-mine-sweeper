@@ -22,7 +22,8 @@
             android:gravity="center"
             android:text="Choose difficulty"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/tvDifficultyBeginner"

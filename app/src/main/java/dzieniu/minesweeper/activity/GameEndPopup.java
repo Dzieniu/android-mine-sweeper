@@ -57,6 +57,6 @@ public class GameEndPopup extends AppCompatActivity {
 
         int width = dm.widthPixels;
         int height = dm.heightPixels;
-        getWindow().setLayout((int)(width*.8),(int)(height*.8));
+        getWindow().setLayout((int)(width*.7),(int)(height*.5));
     }
 }

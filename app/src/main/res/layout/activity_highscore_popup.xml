@@ -19,7 +19,8 @@
             android:gravity="center"
             android:text="It's your new highscore!"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/buttonOk"

@@ -20,7 +20,8 @@
             android:gravity="center"
             android:text="Game over"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/buttonPlayAgain"

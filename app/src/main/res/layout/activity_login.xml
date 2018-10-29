@@ -16,7 +16,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimary"
-        android:textSize="32sp"
+        android:textSize="36sp"
         android:textStyle="bold" />
 
     <ImageView
@@ -27,8 +27,8 @@
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/signInButton"
-        android:layout_width="300dp"
-        android:layout_height="60dp"
+        android:layout_width="233dp"
+        android:layout_height="62dp"
         android:layout_gravity="center"
         android:visibility="visible"></com.google.android.gms.common.SignInButton>
 

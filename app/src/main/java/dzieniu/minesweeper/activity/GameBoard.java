@@ -22,6 +22,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
@@ -31,6 +33,9 @@ import dzieniu.minesweeper.Field;
 import dzieniu.minesweeper.GameSaver;
 import dzieniu.minesweeper.R;
 import dzieniu.minesweeper.activity.leaderboard.LeaderBoard;
+
+// This class code is outdated and full of spaghetti.
+// Please do not judge author based on this code quality ;)
 
 public class GameBoard extends AppCompatActivity{
 
@@ -353,18 +358,12 @@ public class GameBoard extends AppCompatActivity{
 
     private void calculateRisk(){
         if(!tvMinesLeft.getText().toString().matches("0")) {
-            String risk = "";
-            risk = "" + ((double) Integer.parseInt(tvMinesLeft.getText() + "") / (allFields - fieldsCounter)) * 100;
-            risk = risk.substring(0, 4);
-            tvRisk.setText("risk: "+risk+"%");
+            double danger = ((double) Integer.parseInt(tvMinesLeft.getText() + "") / (allFields - fieldsCounter)) * 100;
+            tvRisk.setText("Danger: " + new BigDecimal(danger).setScale(2, RoundingMode.HALF_UP) + "%");
         }else{
-            tvRisk.setText("risk: 0%");
+            tvRisk.setText("Danger: 0%");
         }
     }
-
-    //
-    //          FIELD METHODS!!!          FIELD METHODS!!!          FIELD METHODS!!!          FIELD METHODS!!!
-    //
 
     private void adjacent(Field field) {
 
@@ -469,10 +468,6 @@ public class GameBoard extends AppCompatActivity{
         }
     }
 
-    //
-    //          END OF FIELD METHODS!!!          END OF FIELD METHODS!!!          END OF FIELD METHODS!!!
-    //
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -530,13 +525,17 @@ public class GameBoard extends AppCompatActivity{
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    Long time = Long.parseLong(dataSnapshot.getValue().toString());
-                    if (time>gameTime) {
-                        databaseReference.child("highscores/" + difficulty + "/" + user.getDisplayName()).setValue(gameTime);
-                        databaseReference.orderByValue();
+                    if (dataSnapshot.getValue()!=null) {
+                        Long time = (Long) dataSnapshot.getValue();
+                        if (time > gameTime) {
+                            databaseReference.child("highscores/" + difficulty + "/" + user.getDisplayName()).setValue(gameTime);
+                            databaseReference.orderByValue();
 
-                        Intent intent = new Intent(GameBoard.this,HighScorePopup.class);
-                        GameBoard.this.startActivityForResult(intent, 2);
+                            Intent intent = new Intent(GameBoard.this,HighScorePopup.class);
+                            startActivity(intent);
+                        }
+                    } else {
+                        databaseReference.child("highscores").child(difficulty).child(user.getDisplayName()).setValue(gameTime);
                     }
                 }
 
@@ -553,11 +552,6 @@ public class GameBoard extends AppCompatActivity{
     {
         if(keyCode==KeyEvent.KEYCODE_BACK)
         {
-            if (over == 1) {
-                deleteFile("minesweeperSavedGameState.txt");
-            } else {
-                GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
-            }
             Intent intent = new Intent(getApplicationContext(), MainMenu.class);
             startActivity(intent);
             finish();

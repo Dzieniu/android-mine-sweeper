@@ -8,6 +8,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         android:orientation="vertical">
@@ -20,85 +21,87 @@
             android:layout_marginBottom="40dp"
             android:gravity="center"
             android:text="Create your game"
+            android:textAllCaps="false"
             android:textColor="@color/colorPrimary"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/textView4"
+            android:id="@+id/textViewHeight"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="Height"
+            android:text="Height: 0"
             android:textColor="@color/colorPrimary"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etHeight"
-            android:layout_width="match_parent"
-            android:layout_height="46dp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
-            android:background="@drawable/border4"
-            android:ems="10"
-            android:gravity="center_vertical|center"
-            android:inputType="number" />
+        <SeekBar
+            android:id="@+id/seekBarHeight"
+            android:layout_width="200dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
 
         <TextView
-            android:id="@+id/textView3"
+            android:id="@+id/textViewWidth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="Width"
+            android:text="Width: 0"
             android:textColor="@color/colorPrimary"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etWidth"
-            android:layout_width="match_parent"
-            android:layout_height="41dp"
-            android:layout_marginBottom="15dp"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
-            android:background="@drawable/border4"
-            android:ems="10"
-            android:gravity="center_vertical|center"
-            android:inputType="number" />
+        <SeekBar
+            android:id="@+id/seekBarWidth"
+            android:layout_width="200dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/textViewMines"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="Mines"
+            android:text="Mines: 0"
             android:textColor="@color/colorPrimary"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/etMines"
-            android:layout_width="match_parent"
-            android:layout_height="37dp"
-            android:layout_marginBottom="40dp"
-            android:layout_marginLeft="60dp"
-            android:layout_marginRight="60dp"
-            android:background="@drawable/border4"
-            android:ems="10"
-            android:gravity="center_vertical|center"
-            android:inputType="number" />
+        <SeekBar
+            android:id="@+id/seekBarMines"
+            android:layout_width="200dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp" />
+
+        <TextView
+            android:id="@+id/textViewDanger"
+            android:layout_width="147dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Danger: 0.00%" />
 
         <Button
             android:id="@+id/buttonCreateGame"
-            android:layout_width="wrap_content"
+            android:layout_width="154dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginLeft="40dp"
+            android:layout_marginTop="10dp"
             android:layout_marginRight="40dp"
             android:text="Create"
             android:textAllCaps="false"
-            android:textColor="@color/colorPrimary" />
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
 
     </LinearLayout>
 </ScrollView>

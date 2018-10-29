@@ -3,69 +3,143 @@ package dzieniu.minesweeper.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
-import android.view.View;
+import android.view.KeyEvent;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import dzieniu.minesweeper.R;
 
 public class CustomGame extends AppCompatActivity {
 
     Button buttonCreateGame;
-    EditText etHeight,etWidth,etMines;
+    TextView textViewHeight, textViewWidth, textViewMines, textViewDanger;
+    SeekBar seekBarHeight, seekBarWidth, seekBarMines;
+
+    private final int maxHeight = 50;
+    private final int maxWidth = 50;
+
+    private int height = 0;
+    private int width = 0;
+    private int mines = 0;
+    private double danger = 0.0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_custom_difficulty);
+        setContentView(R.layout.activity_custom_game);
 
-        etHeight = (EditText) findViewById(R.id.etHeight);
-        etWidth = (EditText) findViewById(R.id.etWidth);
-        etMines = (EditText) findViewById(R.id.etMines);
+        textViewHeight = findViewById(R.id.textViewHeight);
+        textViewWidth = findViewById(R.id.textViewWidth);
+        textViewMines = findViewById(R.id.textViewMines);
+        textViewDanger = findViewById(R.id.textViewDanger);
 
-        buttonCreateGame = (Button) findViewById(R.id.buttonCreateGame);
-        buttonCreateGame.setOnClickListener(new View.OnClickListener() {
+        seekBarHeight = findViewById(R.id.seekBarHeight);
+        seekBarWidth = findViewById(R.id.seekBarWidth);
+        seekBarMines = findViewById(R.id.seekBarMines);
+
+
+        seekBarHeight.setMax(maxHeight);
+        seekBarWidth.setMax(maxWidth);
+        seekBarMines.setMax(width * height);
+
+        seekBarHeight.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
-            public void onClick(View v) {
-                int hei = Integer.parseInt(etHeight.getText().toString());
-                int wid = Integer.parseInt(etWidth.getText().toString());
-                int min = Integer.parseInt(etMines.getText().toString());
-                if(checkTheInput(hei,wid,min)) {
-                    startNewGame(hei, wid, min, 180);
-                    finish();
-                }
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                height = i;
+                textViewHeight.setText("Height: " + i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                seekBarMines.setMax(width * height);
             }
         });
 
-        makeThisPopUp();
-    }
+        seekBarWidth.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
 
-    private void makeThisPopUp(){
-        DisplayMetrics dm = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(dm);
-
-        int width = dm.widthPixels;
-        int height = dm.heightPixels;
-        getWindow().setLayout((int)(width*.8),(int)(height*.8));
-    }
-
-    public boolean checkTheInput(int hei,int wid,int min){
-        if(etHeight.getText().toString()!=""){
-            if(etWidth.getText().toString()!=""){
-                if(min<(hei*wid)){
-                    return true;
-                }
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                width = i;
+                textViewWidth.setText("Width: " + i);
             }
-        }
-        return false;
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                seekBarMines.setMax(width * height);
+            }
+        });
+
+        seekBarMines.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                mines = i;
+                textViewMines.setText("Mines: " + i);
+                if (height>=1 && width>=1) {
+                    danger = (double) mines/(height * width)*100;
+                    textViewDanger.setText("Danger: " + new BigDecimal(danger).setScale(2, RoundingMode.HALF_UP) + "%");
+                } else textViewDanger.setText("Danger: 0.00%");
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                if (danger > 20) Toast.makeText(getApplicationContext(), "Danger above 20% is not recommended", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        buttonCreateGame = findViewById(R.id.buttonCreateGame);
+        buttonCreateGame.setOnClickListener(v -> {
+            if (validSettings()) {
+                startNewGame(height, width, mines, 180);
+                finish();
+            }
+        });
+    }
+
+    private boolean validSettings() {
+        return  height>=1 && width>=1 && mines>=1;
     }
 
     public void startNewGame(int width, int height, int mines, int time){
-        Intent intent = new Intent(CustomGame.this, GameBoard.class);
+        Intent intent = new Intent(getApplicationContext(), GameBoard.class);
         intent.putExtra("width",width);
         intent.putExtra("height",height);
         intent.putExtra("mines",mines);
         intent.putExtra("time",time);
-        CustomGame.this.startActivity(intent);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode==KeyEvent.KEYCODE_BACK)
+        {
+            Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+            startActivity(intent);
+            finish();
+
+        }
+        return true;
     }
 }
