@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -74,13 +73,6 @@ public class GameBoard extends AppCompatActivity{
         buttonReset = findViewById(R.id.buttonReset);
         buttonSwitchMode = findViewById(R.id.buttonSwitchMode);
         buttonDefuse = findViewById(R.id.buttonDefuse);
-
-        tvMinesLeft.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                uploadHighScore();
-            }
-        });
 
         isSave = getIntent().getBooleanExtra("isSave",false);
 
@@ -481,7 +473,6 @@ public class GameBoard extends AppCompatActivity{
                         if (userDto.getTime() > gameTime) {
                             userDto.setTime(gameTime);
                             databaseReference.child("highscores").child(difficulty.name().toLowerCase()).child(user.getUid()).setValue(userDto);
-                            databaseReference.orderByValue();
 
                             Intent intent = new Intent(GameBoard.this,HighScorePopup.class);
                             startActivity(intent);
@@ -489,6 +480,9 @@ public class GameBoard extends AppCompatActivity{
                     } else {
                         UserDto userDto = new UserDto(user.getDisplayName(), gameTime);
                         databaseReference.child("highscores").child(difficulty.name().toLowerCase()).child(user.getUid()).setValue(userDto);
+
+                        Intent intent = new Intent(GameBoard.this,HighScorePopup.class);
+                        startActivity(intent);
                     }
                 }
 

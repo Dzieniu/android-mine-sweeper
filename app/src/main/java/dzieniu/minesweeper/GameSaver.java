@@ -13,7 +13,6 @@ import java.util.Map;
 
 public class GameSaver {
 
-    private static final String GAME_SEED = "minesweeperSavedSeed.txt";
     private static final String GAME_STATE = "minesweeperSavedGameState.txt";
 
     public static String readFromFile(String filename, Context context) {
@@ -51,21 +50,6 @@ public class GameSaver {
         catch (IOException e) {
             Log.e("Exception", "File write failed: " + e.toString());
         }
-    }
-
-    public static void saveSeed(int height, int width, int mines, Field[][] minefield, Context context){
-
-        String save = height+"/"+width+"/"+mines+"/";
-        for(int i=1;i<height+1;i++){
-            for(int j=1;j<width+1;j++) {
-                if(minefield[i][j].getContent()!="x"){
-                    save = save+"0";
-                }else if(minefield[i][j].getContent()=="x"){
-                    save = save+"1";
-                }
-            }
-        }
-        writeToFile(save,GAME_SEED,context);
     }
 
     public static void saveGameState(int height, int width, int mines, long time, int defuses, int minesLeft, Field[][] minefield, Context context){

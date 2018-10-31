@@ -38,21 +38,23 @@ public class TabExpert extends Fragment {
         @Override
         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-            Iterable<DataSnapshot> children = dataSnapshot.getChildren();
-            if(children.iterator().hasNext()) {
-                linearLayout.removeAllViews();
-                for(DataSnapshot snapshot : children) {
-                    UserDto userDto = snapshot.getValue(UserDto.class);
-                    addUserScore(userDto.getDisplayName() + " - " + userDto.getTime());
+            if(getContext() != null) {
+                Iterable<DataSnapshot> children = dataSnapshot.getChildren();
+                if (children.iterator().hasNext()) {
+                    linearLayout.removeAllViews();
+                    for (DataSnapshot snapshot : children) {
+                        UserDto userDto = snapshot.getValue(UserDto.class);
+                        addUserScore(userDto.getDisplayName() + " - " + userDto.getTime());
+                    }
+                } else {
+                    TextView result = new TextView(getContext());
+                    result.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+                    result.setText("No highscores found");
+                    result.setGravity(Gravity.CENTER);
+                    result.setPadding(0, 40, 0, 10);
+                    result.setTextSize(22);
+                    linearLayout.addView(result);
                 }
-            } else {
-                TextView result = new TextView(getContext());
-                result.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                result.setText("No highscores found");
-                result.setGravity(Gravity.CENTER);
-                result.setPadding(0,40,0,10);
-                result.setTextSize(22);
-                linearLayout.addView(result);
             }
         }
 
@@ -99,12 +101,5 @@ public class TabExpert extends Fragment {
         line.setBackgroundColor(Color.parseColor("#ff000000"));
         linearLayout.addView(highScore);
         linearLayout.addView(line);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        databaseReference.child("highscores").child(TAB_DIFFICULTY).removeEventListener(databaseListener);
     }
 }

@@ -19,6 +19,8 @@ public class LeaderBoard extends AppCompatActivity {
 
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
+    private SectionsPageAdapter sectionsPageAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,7 +35,7 @@ public class LeaderBoard extends AppCompatActivity {
 
     private void setUpViewPager(ViewPager viewPager) {
 
-        SectionsPageAdapter sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+        sectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
 
         TabBeginner tabBeginner = new TabBeginner();
         tabBeginner.setDatabaseReference(databaseReference);
@@ -62,7 +64,6 @@ public class LeaderBoard extends AppCompatActivity {
             Intent intent = new Intent(getApplicationContext(), MainMenu.class);
             startActivity(intent);
             finish();
-
         }
         return true;
     }
