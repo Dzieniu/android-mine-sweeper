@@ -42,7 +42,6 @@ public class CustomGame extends AppCompatActivity {
         seekBarWidth = findViewById(R.id.seekBarWidth);
         seekBarMines = findViewById(R.id.seekBarMines);
 
-
         seekBarHeight.setMax(maxHeight);
         seekBarWidth.setMax(maxWidth);
         seekBarMines.setMax(width * height);
@@ -111,7 +110,7 @@ public class CustomGame extends AppCompatActivity {
         buttonCreateGame = findViewById(R.id.buttonCreateGame);
         buttonCreateGame.setOnClickListener(v -> {
             if (validSettings()) {
-                startNewGame(height, width, mines, 180);
+                startNewGame(height, width, mines);
                 finish();
             }
         });
@@ -121,12 +120,11 @@ public class CustomGame extends AppCompatActivity {
         return  height>=1 && width>=1 && mines>=1;
     }
 
-    public void startNewGame(int width, int height, int mines, int time){
+    public void startNewGame(int width, int height, int mines){
         Intent intent = new Intent(getApplicationContext(), GameBoard.class);
         intent.putExtra("width",width);
         intent.putExtra("height",height);
         intent.putExtra("mines",mines);
-        intent.putExtra("time",time);
         startActivity(intent);
     }
 

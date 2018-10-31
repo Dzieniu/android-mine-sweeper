@@ -43,7 +43,8 @@ public class TabBeginner extends Fragment {
             if(children.iterator().hasNext()) {
                 linearLayout.removeAllViews();
                 for(DataSnapshot snapshot : children) {
-                    addUserScore(snapshot.getKey() + " - " + snapshot.getValue());
+                    UserDto userDto = snapshot.getValue(UserDto.class);
+                    addUserScore(userDto.getDisplayName() + " - " + userDto.getTime());
                 }
 
             } else {
@@ -100,5 +101,12 @@ public class TabBeginner extends Fragment {
         line.setBackgroundColor(Color.parseColor("#ff000000"));
         linearLayout.addView(highScore);
         linearLayout.addView(line);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        databaseReference.child("highscores").child(TAB_DIFFICULTY).removeEventListener(databaseListener);
     }
 }

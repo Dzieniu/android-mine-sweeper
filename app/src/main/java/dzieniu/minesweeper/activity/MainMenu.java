@@ -44,8 +44,7 @@ public class MainMenu extends AppCompatActivity {
 
         buttonContinue.setOnClickListener((event) -> {
             Intent intent = new Intent(MainMenu.this, GameBoard.class);
-            intent.putExtra("isSave",2);
-            intent.putExtra("save",GameSaver.readFromFile(SAVE_FILE,getApplicationContext()));
+            intent.putExtra("isSave",true);
             startActivity(intent);
             finish();
         });

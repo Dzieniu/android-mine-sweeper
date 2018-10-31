@@ -3,13 +3,12 @@ package dzieniu.minesweeper.activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -29,112 +28,139 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import dzieniu.minesweeper.Difficulty;
 import dzieniu.minesweeper.Field;
 import dzieniu.minesweeper.GameSaver;
 import dzieniu.minesweeper.R;
 import dzieniu.minesweeper.activity.leaderboard.LeaderBoard;
-
-// This class code is outdated and full of spaghetti.
-// Please do not judge author based on this code quality ;)
+import dzieniu.minesweeper.activity.leaderboard.UserDto;
 
 public class GameBoard extends AppCompatActivity{
 
-    public static int mines,over;
-    public static int saveCounter,isSave,width,height;
-    public static TextView tvMinesLeft,tvTime,tvRisk, tvDefuses;
-    private  Button buttonReset,buttonSwitchMode,buttonDefuse;
-    public static Field minefield[][];
-    public static int mode,allFields,emptyFields,fieldsCounter,flagCounter,defuses;
+    private boolean isSave = false;
+    private int width, height, mines, saveCounter;
+    private Field minefield[][];
+
+    private int totalFields,emptyFields, minesLeft;
+    private int mode = 0;
+    private int fieldsCounter = 0;
+    private int flagCounter = 0;
     private long gameTime = 0;
-    private String difficulty = "";
+    private int defuses = 3;
+    private boolean isOver = false;
+
+    private String gameState;
+
+    private TextView tvMinesLeft, tvTime, tvDanger, tvDefusesLeft;
+    private Button buttonReset, buttonSwitchMode, buttonDefuse;
+
+    private static final String GAME_SAVE_FILE = "minesweeperSavedGameState.txt";
 
     private Timer timer = new Timer();
 
     private DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_board);
 
-        isSave = getIntent().getIntExtra("isSave",0);
+        tvMinesLeft = findViewById(R.id.tvMinesLeft);
+        tvTime = findViewById(R.id.tvTime);
+        tvDanger = findViewById(R.id.tvDanger);
+        tvDefusesLeft = findViewById(R.id.tvDefusesLeft);
+        buttonReset = findViewById(R.id.buttonReset);
+        buttonSwitchMode = findViewById(R.id.buttonSwitchMode);
+        buttonDefuse = findViewById(R.id.buttonDefuse);
 
-        if(isSave==0) {
-            width = getIntent().getIntExtra("width", 0);
-            height = getIntent().getIntExtra("height", 0);
-            mines = getIntent().getIntExtra("mines", 0);
-            defuses = 3;
-        }else if(isSave==1 || isSave==2){
+        tvMinesLeft.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                uploadHighScore();
+            }
+        });
+
+        isSave = getIntent().getBooleanExtra("isSave",false);
+
+        if(isSave) {
+
+            gameState = GameSaver.readFromFile(GAME_SAVE_FILE, getApplicationContext());
             Map<String, Integer> save = GameSaver.readSave(getApplicationContext());
             height = save.get("height");
             width = save.get("width");
             mines = save.get("mines");
             gameTime = save.get("time");
             defuses = save.get("defuses");
+            minesLeft = save.get("minesLeft");
             saveCounter = save.get("counter");
+
+        }else {
+
+            width = getIntent().getIntExtra("width", 0);
+            height = getIntent().getIntExtra("height", 0);
+            mines = getIntent().getIntExtra("mines", 0);
+            minesLeft = mines;
+
         }
 
-            tvMinesLeft = findViewById(R.id.tvMinesLeft);
-            tvTime = findViewById(R.id.tvTime);
-            tvRisk = findViewById(R.id.tvRisk);
-            tvDefuses = findViewById(R.id.tvDefuses);
-            buttonReset = findViewById(R.id.buttonReset);
-            buttonSwitchMode = findViewById(R.id.buttonSwitchMode);
-            buttonDefuse = findViewById(R.id.buttonDefuse);
+        totalFields = height * width;
+        emptyFields = (height * width) - mines;
 
-            fieldsCounter = 0;
-            flagCounter = 0;
-            allFields = height * width;
-            emptyFields = (height * width) - mines;
-            over = 0;
+        // core >>>
+        generateMinefield();
 
-            tvDefuses.setText("Defuses: " + defuses);
-            buttonDefuse.setOnClickListener(v -> {
-                if(defuses>0) {
-                    defuses--;
-                    tvDefuses.setText("Defuses: " + defuses);
-                    randomDefuse();
-                }
-            });
+        if(isSave) loadMines();
+        else generateMines();
 
-            buttonReset.setOnClickListener(v -> {
-                Intent intent = getIntent();
-                intent.putExtra("isSave",0);
-                intent.putExtra("width",width);
-                intent.putExtra("height",height);
-                intent.putExtra("mines",mines);
-                finish();
-                startActivity(intent);
-            });
+        setUpFieldsContent();
+        setUpAdjacent();
 
+        if(isSave){
+            setUpGameState();
+        }
+        // <<<
+
+        calculateDanger();
+
+        tvMinesLeft.setText(minesLeft + "");
+        tvDefusesLeft.setText("Defuses: " + defuses);
+        if (mode == 0) {
             buttonSwitchMode.setText("Step");
-            buttonSwitchMode.setOnClickListener(v -> {
-                if (mode == 0) {
-                    mode = 1;
-                    buttonSwitchMode.setText("Flag");
-                } else if (mode == 1) {
-                    mode = 0;
-                    buttonSwitchMode.setText("Step");
-                }
-            });
+        } else buttonSwitchMode.setText("Flag");
 
-            tvMinesLeft.setText(mines + "");
-
-            setUpMinefield();
-            setUpMines();
-            GameSaver.saveSeed(height,width,mines,minefield,getApplicationContext());
-            setUpFields();
-            setUpAdjacent();
-            if(isSave==2){
-                setUpGameState();
+        buttonDefuse.setOnClickListener(v -> {
+            if(defuses>0) {
+                defuses--;
+                tvDefusesLeft.setText("Defuses: " + defuses);
+                defuse();
             }
-            GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
-            calculateRisk();
+        });
+
+        buttonReset.setOnClickListener(v -> {
+            Intent intent = getIntent();
+            intent.putExtra("isSave",0);
+            intent.putExtra("width",width);
+            intent.putExtra("height",height);
+            intent.putExtra("mines",mines);
+            finish();
+            startActivity(intent);
+        });
+
+        buttonSwitchMode.setOnClickListener(v -> {
+            if (mode == 0) {
+                mode = 1;
+                buttonSwitchMode.setText("Flag");
+            } else if (mode == 1) {
+                mode = 0;
+                buttonSwitchMode.setText("Step");
+            }
+        });
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
-    private void setUpMinefield(){
+    // Generates minefield structure
+    private void generateMinefield(){
 
         LinearLayout layout = findViewById(R.id.gameBoard);
         layout.setOrientation(LinearLayout.VERTICAL);
@@ -162,13 +188,13 @@ public class GameBoard extends AppCompatActivity{
                 row.addView(button);
                 final Field field = new Field(button,"");
                 field.getButton().setOnClickListener(v -> {
-                    if(GameBoard.mode==0) {
+                    if(mode==0) {
                         adjacent(field);
-                    }else if(GameBoard.mode==1){
+                    }else if(mode==1){
                         flag(field);
                     }
-                    if(over==0) {
-                        GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
+                    if(!isOver) {
+                        saveGame();
                     }
                 });
                 minefield[i+1][j+1] = field;
@@ -179,33 +205,13 @@ public class GameBoard extends AppCompatActivity{
         }
     }
 
-    private void randomDefuse(){
+    // Randomly generates mines from the initial mine pool
+    private void generateMines(){
 
-        Random generator = new Random();
-        int random1,random2;
-
-        while(true){
-
-            random1 = generator.nextInt(height) + 1;
-            random2 = generator.nextInt(width) + 1;
-
-            if (minefield[random1][random2].getClicked()==0) {
-                if(minefield[random1][random2].getContent().matches("x")) {
-                    flag(minefield[random1][random2]);
-                }else adjacent(minefield[random1][random2]);
-                GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
-                break;
-            }
-        }
-    }
-
-    private void setUpMines(){
-
-        if(isSave==0) {
             int x=0;
             int random1, random2;
             Random random = new Random();
-            for (; ; ) {
+            while(true) {
 
                 random1 = random.nextInt(height) + 1;
                 random2 = random.nextInt(width) + 1;
@@ -216,33 +222,25 @@ public class GameBoard extends AppCompatActivity{
                 }
                 if (x == mines) break;
             }
-        }else if(isSave==1){
-            String save = getIntent().getStringExtra("save");
-            for(int i=1;i<height+1;i++){
-                for(int j=1;j<width+1;j++) {
+    }
 
-                    if ((save.charAt(saveCounter)+"").matches("1")) {
-                        minefield[i][j].setContent("x");
-                    }
-                    saveCounter++;
-                }
-            }
-        }else if(isSave==2){
-            String save = getIntent().getStringExtra("save");
-            int counter = saveCounter;
-            for(int i=1;i<height+1;i++){
-                for(int j=1;j<width+1;j++) {
+    // Loads mines from save file into the game board
+    private void loadMines() {
 
-                    if ((save.charAt(counter)+"").matches("2") || (save.charAt(counter)+"").matches("3")) {
-                        minefield[i][j].setContent("x");
-                    }
-                    counter++;
+        int counter = saveCounter;
+        for(int i=1;i<height+1;i++){
+            for(int j=1;j<width+1;j++) {
+
+                if ((gameState.charAt(counter)+"").matches("2") || (gameState.charAt(counter)+"").matches("3")) {
+                    minefield[i][j].setContent("x");
                 }
+                counter++;
             }
         }
     }
 
-    private void setUpFields(){
+    // Counts number of adjacent mines for every field
+    private void setUpFieldsContent(){
 
         for(int i=1;i<height+1;i++){
             for(int j=1;j<width+1;j++){
@@ -280,6 +278,7 @@ public class GameBoard extends AppCompatActivity{
         }
     }
 
+    // Sets up field adjacency
     private void setUpAdjacent(){
         for(int i=1;i<height+1;i++){
             for(int j=1;j<width+1;j++) {
@@ -296,15 +295,15 @@ public class GameBoard extends AppCompatActivity{
     }
 
     public void setUpGameState(){
-        String save = getIntent().getStringExtra("save");
+
         int counter = saveCounter;
         for(int i=1;i<height+1;i++) {
             for (int j = 1; j < width + 1; j++) {
 
-                if ((save.charAt(counter)+"").matches("1")) {
+                if ((gameState.charAt(counter)+"").matches("1")) {
                     minefield[i][j].getButton().setBackgroundResource(R.drawable.border);
                     minefield[i][j].setClicked(1);
-                    GameBoard.fieldsCounter++;
+                    fieldsCounter++;
                     if(!minefield[i][j].getContent().contains("0")){
                         minefield[i][j].getButton().setText(minefield[i][j].getContent());
                         if(minefield[i][j].getContent().matches("1")) minefield[i][j].getButton().setTextColor(Color.parseColor("#FF2A701E"));
@@ -317,51 +316,26 @@ public class GameBoard extends AppCompatActivity{
                         if(minefield[i][j].getContent().matches("8")) minefield[i][j].getButton().setTextColor(Color.parseColor("#FF000000"));
                     }
                     minefield[i][j].getButton().setClickable(false);
-                }else if ((save.charAt(counter)+"").matches("3") || (save.charAt(counter)+"").matches("4")) {
+                }else if ((gameState.charAt(counter)+"").matches("3") || (gameState.charAt(counter)+"").matches("4")) {
                     minefield[i][j].setClicked(2);
                     minefield[i][j].getButton().setText("!");
                     minefield[i][j].getButton().setBackgroundResource(R.drawable.border3);
                     fieldsCounter++;
                     flagCounter++;
-                    tvMinesLeft.setText(Integer.parseInt(tvMinesLeft.getText() + "") - 1 + "");
+                    minesLeft--;
+                    tvMinesLeft.setText(minesLeft + "");
                 }
                 counter++;
             }
         }
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        timer.cancel();
-        if (over == 1) {
-            deleteFile("minesweeperSavedGameState.txt");
-        } else {
-            GameSaver.saveGameState(height,width,mines,gameTime,defuses,minefield,getApplicationContext());
-        }
-    }
-
-    @Override
-    public void onPostResume() {
-        super.onPostResume();
-        timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                if (over == 0) {
-                    tvTime.setText(gameTime + " s");
-                    gameTime++;
-                }
-            }
-        }, 1000, 1000);
-    }
-
-    private void calculateRisk(){
-        if(!tvMinesLeft.getText().toString().matches("0")) {
-            double danger = ((double) Integer.parseInt(tvMinesLeft.getText() + "") / (allFields - fieldsCounter)) * 100;
-            tvRisk.setText("Danger: " + new BigDecimal(danger).setScale(2, RoundingMode.HALF_UP) + "%");
+    private void calculateDanger(){
+        if(minesLeft!=0) {
+            double danger = ((double) minesLeft / (totalFields - fieldsCounter)) * 100;
+            tvDanger.setText("Danger: " + new BigDecimal(danger).setScale(2, RoundingMode.HALF_UP) + "%");
         }else{
-            tvRisk.setText("Danger: 0%");
+            tvDanger.setText("Danger: 0%");
         }
     }
 
@@ -371,7 +345,7 @@ public class GameBoard extends AppCompatActivity{
 
             field.getButton().setBackgroundResource(R.drawable.border);
             field.setClicked(1);
-            GameBoard.fieldsCounter++;
+            fieldsCounter++;
             if(!field.getContent().contains("0")){
                 field.getButton().setText(field.getContent());
                 if(field.getContent().matches("1")) field.getButton().setTextColor(Color.parseColor("#FF2A701E"));
@@ -405,14 +379,15 @@ public class GameBoard extends AppCompatActivity{
     private void flag(Field field){
         if(field.getClicked() != 1) {
             if (field.getButton().getText() != "!") {
-                if(!tvMinesLeft.getText().toString().matches("0")) {
+                if(minesLeft!=0) {
                     field.setClicked(2);
                     field.getButton().setText("!");
                     field.getButton().setBackgroundResource(R.drawable.border3);
                     fieldsCounter++;
                     flagCounter++;
-                    tvMinesLeft.setText(Integer.parseInt(tvMinesLeft.getText() + "") - 1 + "");
-                    calculateRisk();
+                    minesLeft--;
+                    tvMinesLeft.setText(minesLeft + "");
+                    calculateDanger();
                 }
             } else if (field.getButton().getText() == "!") {
                 field.setClicked(0);
@@ -420,8 +395,9 @@ public class GameBoard extends AppCompatActivity{
                 field.getButton().setBackgroundResource(R.drawable.border2);
                 fieldsCounter--;
                 flagCounter--;
-                tvMinesLeft.setText(Integer.parseInt(GameBoard.tvMinesLeft.getText()+"")+1+"");
-                calculateRisk();
+                minesLeft++;
+                tvMinesLeft.setText(minesLeft + "");
+                calculateDanger();
             }
         }
     }
@@ -430,22 +406,22 @@ public class GameBoard extends AppCompatActivity{
         for(int i=1;i<height+1;i++){
             for(int j=1;j<width+1;j++) {
                 if(minefield[i][j].getClicked()==0){
-                    minefield[i][j].getButton().setText(GameBoard.minefield[i][j].getContent());
+                    minefield[i][j].getButton().setText(minefield[i][j].getContent());
                     minefield[i][j].getButton().setClickable(false);
                     minefield[i][j].setClicked(1);
                 }
             }
         }
-        deleteFile("minesweeperSavedGameState.txt");
-        over = 1;
-        Intent intent = new Intent(GameBoard.this,GameEndPopup.class);
-        intent.putExtra("wynik","You lose ...");
+        deleteFile(GAME_SAVE_FILE);
+        isOver = true;
+        Intent intent = new Intent(getApplicationContext(),GameEndPopup.class);
+        intent.putExtra("gameResult","You lose ...");
         GameBoard.this.startActivityForResult(intent, 2);
     }
 
     private void checkForWin(){
 
-        calculateRisk();
+        calculateDanger();
         if((fieldsCounter-flagCounter)==emptyFields){
             for(int i=1;i<height+1;i++){
                 for(int j=1;j<width+1;j++) {
@@ -456,86 +432,63 @@ public class GameBoard extends AppCompatActivity{
                     }
                 }
             }
-            deleteFile("minesweeperSavedGameState.txt");
+            deleteFile(GAME_SAVE_FILE);
             if (getParent()!=null) getParent().recreate();
-            over = 1;
+            isOver = true;
 
             Intent intent = new Intent(getApplicationContext(), GameEndPopup.class);
-            intent.putExtra("wynik", "You Win!!!");
+            intent.putExtra("gameResult", "You Win!!!");
             startActivityForResult(intent, 2);
 
             uploadHighScore();
         }
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    private void defuse(){
 
-        if (requestCode == 2) {
-            if(resultCode == 1) {
-                deleteFile("minesweeperSavedGameState.txt");
-                Intent intent = new Intent(getApplicationContext(), MainMenu.class);
-                startActivity(intent);
-                finish();
-            }else if(resultCode == 2){
-                Intent intent = getIntent();
-                intent.putExtra("isSave",0);
-                intent.putExtra("width",width);
-                intent.putExtra("height",height);
-                intent.putExtra("mines",mines);
-                finish();
-                startActivity(intent);
-            }else if(resultCode == 3){
-                finish();
-                Intent intent = new Intent(GameBoard.this, GameBoard.class);
-                intent.putExtra("isSave",1);
-                intent.putExtra("save", GameSaver.readFromFile("minesweeperSavedSeed.txt",getApplicationContext()));
-                GameBoard.this.startActivity(intent);
-            }else if(resultCode == 4){
+        Random generator = new Random();
+        int random1,random2;
 
-            }else if(resultCode == 5){
+        while(true){
 
-                Intent intent = new Intent(GameBoard.this, LeaderBoard.class);
-                GameBoard.this.startActivity(intent);
-                GameBoard.this.finish();
+            random1 = generator.nextInt(height) + 1;
+            random2 = generator.nextInt(width) + 1;
+
+            if (minefield[random1][random2].getClicked()==0) {
+                if(minefield[random1][random2].getContent().matches("x")) {
+                    flag(minefield[random1][random2]);
+                }else adjacent(minefield[random1][random2]);
+                saveGame();
+                break;
             }
         }
     }
 
     public void uploadHighScore(){
 
-        boolean notCustom = true;
+        Difficulty difficulty = Difficulty.difficultyOf(width, height, mines);
 
-        if(height==9 && width==9 && mines==10) {
-            difficulty = "beginner";
-        }else if(height==12 && width==12 && mines==24) {
-            difficulty = "easy";
-        }else if(height==16 && width==16 && mines==40) {
-            difficulty = "intermediate";
-        }else if(height==30 && width==16 && mines==99) {
-            difficulty = "expert";
-        } else notCustom = false;
-
-
-        if (notCustom) {
+        if (difficulty != Difficulty.CUSTOM) {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            databaseReference.child("highscores").child(difficulty).child(user.getDisplayName()).addListenerForSingleValueEvent(new ValueEventListener() {
+            databaseReference.child("highscores").child(difficulty.name().toLowerCase()).child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
 
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
                     if (dataSnapshot.getValue()!=null) {
-                        Long time = (Long) dataSnapshot.getValue();
-                        if (time > gameTime) {
-                            databaseReference.child("highscores/" + difficulty + "/" + user.getDisplayName()).setValue(gameTime);
+                        UserDto userDto = dataSnapshot.getValue(UserDto.class);
+                        if (userDto.getTime() > gameTime) {
+                            userDto.setTime(gameTime);
+                            databaseReference.child("highscores").child(difficulty.name().toLowerCase()).child(user.getUid()).setValue(userDto);
                             databaseReference.orderByValue();
 
                             Intent intent = new Intent(GameBoard.this,HighScorePopup.class);
                             startActivity(intent);
                         }
                     } else {
-                        databaseReference.child("highscores").child(difficulty).child(user.getDisplayName()).setValue(gameTime);
+                        UserDto userDto = new UserDto(user.getDisplayName(), gameTime);
+                        databaseReference.child("highscores").child(difficulty.name().toLowerCase()).child(user.getUid()).setValue(userDto);
                     }
                 }
 
@@ -545,6 +498,77 @@ public class GameBoard extends AppCompatActivity{
                 }
             });
         }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        timer.cancel();
+        if (isOver) {
+            deleteFile(GAME_SAVE_FILE);
+        } else {
+            saveGame();
+        }
+    }
+
+    @Override
+    public void onPostResume() {
+        super.onPostResume();
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (!isOver) {
+                    tvTime.setText(gameTime + " s");
+                    gameTime++;
+                }
+            }
+        }, 1000, 1000);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 2) {
+            switch (resultCode) {
+                case 1:
+                    playAgain();
+                    break;
+                case 3:
+                    exitToHighScores();
+                    break;
+                case 4:
+                    exitToMenu();
+                    break;
+            }
+        }
+    }
+
+    private void exitToMenu() {
+        deleteFile(GAME_SAVE_FILE);
+        Intent intent = new Intent(getApplicationContext(), MainMenu.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void playAgain() {
+        Intent intent = getIntent();
+        intent.putExtra("isSave",0);
+        intent.putExtra("width",width);
+        intent.putExtra("height",height);
+        intent.putExtra("mines",mines);
+        startActivity(intent);
+        finish();
+    }
+
+    private void exitToHighScores() {
+        Intent intent = new Intent(getApplicationContext(), LeaderBoard.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void saveGame() {
+        GameSaver.saveGameState(height,width,mines,gameTime,defuses, minesLeft, minefield,getApplicationContext());
     }
 
     @Override

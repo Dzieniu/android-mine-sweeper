@@ -25,26 +25,26 @@ public class GameEndPopup extends AppCompatActivity {
         buttonEndGame = findViewById(R.id.buttonEndGame);
 
         tvGameResult = findViewById(R.id.tvGameResult);
-        tvGameResult.setText(getIntent().getStringExtra("wynik"));
+        tvGameResult.setText(getIntent().getStringExtra("gameResult"));
 
         buttonPlayAgain.setOnClickListener(v -> {
-            setResult(2, null);
+            setResult(1, null);
             finish();
         });
 
         buttonRestart.setVisibility(View.GONE);
         buttonRestart.setOnClickListener(v -> {
-            setResult(3, null);
+            setResult(2, null);
             finish();
         });
 
         buttonHighscores.setOnClickListener(v -> {
-            setResult(5, null);
+            setResult(3, null);
             finish();
         });
 
         buttonEndGame.setOnClickListener(v -> {
-            setResult(1, null);
+            setResult(4, null);
             finish();
         });
 

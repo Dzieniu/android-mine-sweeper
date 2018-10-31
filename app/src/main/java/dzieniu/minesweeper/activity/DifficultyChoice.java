@@ -16,7 +16,6 @@ public class DifficultyChoice extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_difficulty_choice);
-        DifficultyChoice.this.setTitle("Choose difficulty");
 
         tvDifficultyBeginner = findViewById(R.id.tvDifficultyBeginner);
         tvDifficultyEasy = findViewById(R.id.tvDifficultyEasy);
@@ -25,22 +24,22 @@ public class DifficultyChoice extends AppCompatActivity {
         tvDifficultyCustom = findViewById(R.id.tvDifficultyCustom);
 
         tvDifficultyBeginner.setOnClickListener(v -> {
-            startNewGame(0,9, 9, 10, 60);
+            startNewGame(9, 9, 10);
             finish();
         });
 
         tvDifficultyEasy.setOnClickListener(v -> {
-            startNewGame(0,12, 12, 24, 120);
+            startNewGame(12, 12, 24);
             finish();
         });
 
         tvDifficultyIntermediate.setOnClickListener(v -> {
-            startNewGame(0,16, 16, 40, 140);
+            startNewGame(16, 16, 40);
             finish();
         });
 
         tvDifficultyExpert.setOnClickListener(v -> {
-            startNewGame(0,16, 30, 99, 180);
+            startNewGame(16, 30, 99);
             finish();
         });
 
@@ -52,13 +51,12 @@ public class DifficultyChoice extends AppCompatActivity {
 
     }
 
-    public void startNewGame(int isSave,int width, int height, int mines, int time){
+    public void startNewGame(int width, int height, int mines){
         Intent intent = new Intent(DifficultyChoice.this, GameBoard.class);
-        intent.putExtra("isSave",0);
+        intent.putExtra("isSave",false);
         intent.putExtra("width",width);
         intent.putExtra("height",height);
         intent.putExtra("mines",mines);
-        intent.putExtra("time",time);
         startActivity(intent);
     }
 

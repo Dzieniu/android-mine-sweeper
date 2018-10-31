@@ -95,7 +95,7 @@
         android:padding="7dp">
 
         <TextView
-            android:id="@+id/tvRisk"
+            android:id="@+id/tvDanger"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -103,12 +103,12 @@
             android:text="risk: 0%" />
 
         <TextView
-            android:id="@+id/tvDefuses"
+            android:id="@+id/tvDefusesLeft"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="Defuses: 3" />
+            android:text="Defuses:" />
 
         <Button
             android:id="@+id/buttonDefuse"

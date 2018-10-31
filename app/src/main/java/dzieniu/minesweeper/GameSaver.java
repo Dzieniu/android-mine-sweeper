@@ -2,7 +2,6 @@ package dzieniu.minesweeper;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,6 +12,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GameSaver {
+
+    private static final String GAME_SEED = "minesweeperSavedSeed.txt";
+    private static final String GAME_STATE = "minesweeperSavedGameState.txt";
 
     public static String readFromFile(String filename, Context context) {
 
@@ -53,7 +55,6 @@ public class GameSaver {
 
     public static void saveSeed(int height, int width, int mines, Field[][] minefield, Context context){
 
-        String filename = "minesweeperSavedSeed.txt";
         String save = height+"/"+width+"/"+mines+"/";
         for(int i=1;i<height+1;i++){
             for(int j=1;j<width+1;j++) {
@@ -64,13 +65,12 @@ public class GameSaver {
                 }
             }
         }
-        writeToFile(save,filename,context);
+        writeToFile(save,GAME_SEED,context);
     }
 
-    public static void saveGameState(int height, int width, int mines, long time, int defuses, Field[][] minefield, Context context){
+    public static void saveGameState(int height, int width, int mines, long time, int defuses, int minesLeft, Field[][] minefield, Context context){
 
-        String filename = "minesweeperSavedGameState.txt";
-        String save = height + "/" + width + "/" + mines + "/" + time + "/" + defuses + "/";
+        String save = height + "/" + width + "/" + mines + "/" + time + "/" + defuses + "/" + minesLeft + "/";
         for(int i=1;i<height+1;i++){
             for(int j=1;j<width+1;j++) {
                 if(!minefield[i][j].getContent().matches("x") && minefield[i][j].getClicked()==0){
@@ -86,18 +86,19 @@ public class GameSaver {
                 }
             }
         }
-        writeToFile(save,filename,context);
+        writeToFile(save,GAME_STATE,context);
     }
 
     public static Map<String, Integer> readSave(Context context){
 
         int counter = 0;
-        String save = readFromFile("minesweeperSavedGameState.txt", context);
+        String save = readFromFile(GAME_STATE, context);
         String sHeight = "";
         String sWidth = "";
         String sMines = "";
         String sTime = "";
         String sDefuses = "";
+        String minesLeft = "";
 
         Log.d("none", save);
 
@@ -146,7 +147,15 @@ public class GameSaver {
                 break;
             }
         }
-
+        for(;;) {
+            if (!(save.charAt(counter)+"").matches("/")) {
+                minesLeft = minesLeft + save.charAt(counter);
+                counter++;
+            } else {
+                counter++;
+                break;
+            }
+        }
 
         Map<String, Integer> savedData = new HashMap<>();
         savedData.put("height", Integer.parseInt(sHeight));
@@ -154,9 +163,8 @@ public class GameSaver {
         savedData.put("mines", Integer.parseInt(sWidth));
         savedData.put("time", Integer.parseInt(sTime));
         savedData.put("defuses", Integer.parseInt(sDefuses));
+        savedData.put("minesLeft", Integer.parseInt(minesLeft));
         savedData.put("counter", counter);
-
-        Log.d("none", savedData.get("time").toString());
 
         return savedData;
     }

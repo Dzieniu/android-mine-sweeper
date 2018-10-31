@@ -6,7 +6,12 @@ public class Field {
 
     private Button button;
     private String content;
-    private Field NW,N,NE,W,E,SW,S,SE;
+
+    private Field
+            NW,N,NE,
+            W,    E,
+            SW,S,SE;
+
     private int clicked;
 
     public Field(Button button, String content){
